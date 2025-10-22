@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practifly AI 賽事校本評核分析報告</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 0.6s ease forwards;
+        }
+        
+        .grade-item {
+            transition: all 0.3s ease;
+        }
+        
+        .grade-item.active:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 下拉菜單樣式 */
+        .autocomplete-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 0.5rem 0.5rem;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 100;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .autocomplete-item {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .autocomplete-item:hover {
+            background-color: #f3f4f6;
+        }
+        
+        .autocomplete-item.highlighted {
+            background-color: #e0e7ff;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800 min-h-screen">
+    <!-- 頁頭 -->
+    <header class="bg-gradient-to-r from-indigo-600 to-purple-700 text-white shadow-lg">
+        <div class="container mx-auto px-6 py-12 md:py-20">
+            <div class="max-w-3xl mx-auto text-center animate-fade-in">
+                <h1 class="text-4xl md:text-5xl font-bold mb-4">Practifly AI 賽事校本評核分析報告</h1>
+                <p class="text-xl md:text-2xl opacity-90">全面的學校學術表現分析與比較平台</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要內容 -->
+    <main class="container mx-auto px-6 py-12">
+        <!-- 歡迎部分 -->
+        <section class="max-w-4xl mx-auto mb-16 text-center animate-fade-in" style="animation-delay: 0.1s;">
+            <h2 class="text-3xl font-bold mb-6 text-gray-800">歡迎使用評核分析平台</h2>
+            <p class="text-lg text-gray-600 mb-8">
+                本平台提供香港各學校的學術表現分析報告，幫助學校、教師和家長了解學生在各學科領域的表現，
+                並與全港及全國水平進行比較，從而制定更有效的教學策略。
+            </p>
+            
+            <div class="bg-white rounded-xl shadow-md p-8 mb-8">
+                <h3 class="text-2xl font-semibold mb-6 text-gray-700">如何使用</h3>
+                <div class="grid md:grid-cols-3 gap-6 text-left">
+                    <div class="flex flex-col items-center">
+                        <div class="w-14 h-14 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
+                            <i class="fa fa-search text-2xl text-indigo-600"></i>
+                        </div>
+                        <p class="text-gray-600 text-center">輸入學校名稱進行搜索</p>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="w-14 h-14 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
+                            <i class="fa fa-graduation-cap text-2xl text-indigo-600"></i>
+                        </div>
+                        <p class="text-gray-600 text-center">選擇您想查看的年級</p>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="w-14 h-14 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
+                            <i class="fa fa-bar-chart text-2xl text-indigo-600"></i>
+                        </div>
+                        <p class="text-gray-600 text-center">查看詳細的分析報告</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 搜索學校部分 -->
+        <section class="max-w-2xl mx-auto mb-16 animate-fade-in" style="animation-delay: 0.2s;">
+            <div class="bg-white rounded-xl shadow-md p-6 md:p-8">
+                <h3 class="text-2xl font-semibold mb-6 text-gray-700 text-center">查找學校報告</h3>
+                
+                <div class="mb-6 relative">
+                    <label for="school-search" class="block text-gray-700 mb-2 text-left">學校名稱</label>
+                    <div class="flex">
+                        <input 
+                            type="text" 
+                            id="school-search" 
+                            placeholder="請輸入學校名稱" 
+                            class="flex-1 px-4 py-3 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                        >
+                        <button 
+                            id="search-btn" 
+                            class="bg-indigo-600 text-white px-6 py-3 rounded-r-lg hover:bg-indigo-700 transition-colors duration-300"
+                        >
+                            <i class="fa fa-search mr-2"></i>搜索
+                        </button>
+                    </div>
+                    <!-- 自動完成下拉框 -->
+                    <div id="autocomplete-dropdown" class="autocomplete-dropdown hidden"></div>
+                </div>
+                
+                <!-- 搜索結果顯示區域 -->
+                <div id="search-results" class="hidden">
+                    <div class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                        <h4 class="font-medium text-gray-800 mb-2">搜索結果:</h4>
+                        <div id="school-list" class="space-y-2">
+                            <!-- 搜索結果將通過JavaScript動態填充 -->
+                        </div>
+                    </div>
+                    
+                    <!-- 年級選擇區域 -->
+                    <div id="grade-selection" class="hidden">
+                        <h4 class="font-medium text-gray-800 mb-4">選擇年級:</h4>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                            <!-- 年級選項 -->
+                            <div class="grade-item bg-gray-200 text-gray-500 rounded-lg p-3 text-center cursor-not-allowed">
+                                <p>小一</p>
+                            </div>
+                            <div class="grade-item bg-gray-200 text-gray-500 rounded-lg p-3 text-center cursor-not-allowed">
+                                <p>小二</p>
+                            </div>
+                            <div class="grade-item bg-gray-200 text-gray-500 rounded-lg p-3 text-center cursor-not-allowed">
+                                <p>小三</p>
+                            </div>
+                            <div class="grade-item bg-gray-200 text-gray-500 rounded-lg p-3 text-center cursor-not-allowed">
+                                <p>小四</p>
+                            </div>
+                            <div class="grade-item bg-gray-200 text-gray-500 rounded-lg p-3 text-center cursor-not-allowed">
+                                <p>小五</p>
+                            </div>
+                            <div class="grade-item active bg-indigo-600 text-white rounded-lg p-3 text-center cursor-pointer" data-grade="P6">
+                                <p>小六</p>
+                            </div>
+                            <div class="grade-item bg-gray-200 text-gray-500 rounded-lg p-3 text-center cursor-not-allowed">
+                                <p>中一</p>
+                            </div>
+                            <div class="grade-item bg-gray-200 text-gray-500 rounded-lg p-3 text-center cursor-not-allowed">
+                                <p>中二</p>
+                            </div>
+                            <div class="grade-item bg-gray-200 text-gray-500 rounded-lg p-3 text-center cursor-not-allowed">
+                                <p>中三</p>
+                            </div>
+                            <div class="grade-item bg-gray-200 text-gray-500 rounded-lg p-3 text-center cursor-not-allowed">
+                                <p>中四</p>
+                            </div>
+                            <div class="grade-item bg-gray-200 text-gray-500 rounded-lg p-3 text-center cursor-not-allowed">
+                                <p>中五</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 平台特色 -->
+        <section class="max-w-5xl mx-auto mb-16 animate-fade-in" style="animation-delay: 0.3s;">
+            <h3 class="text-2xl font-bold mb-8 text-center text-gray-800">平台特色</h3>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow duration-300">
+                    <div class="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
+                        <i class="fa fa-line-chart text-xl text-indigo-600"></i>
+                    </div>
+                    <h4 class="text-xl font-semibold mb-3 text-gray-800">詳細數據分析</h4>
+                    <p class="text-gray-600">提供多維度的學術表現分析，幫助了解學生在各學科領域的強弱項。</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow duration-300">
+                    <div class="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
+                        <i class="fa fa-balance-scale text-xl text-indigo-600"></i>
+                    </div>
+                    <h4 class="text-xl font-semibold mb-3 text-gray-800">對比分析</h4>
+                    <p class="text-gray-600">與全港及全國平均水平進行比較，明確學校的優勢與改進空間。</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow duration-300">
+                    <div class="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
+                        <i class="fa fa-education text-xl text-indigo-600"></i>
+                    </div>
+                    <h4 class="text-xl font-semibold mb-3 text-gray-800">全學段覆蓋</h4>
+                    <p class="text-gray-600">涵蓋小學至中學全學段，跟蹤學生整體學術發展軌跡。</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 頁腳 -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-gray-400">
+                <i class="fa fa-graduation-cap mr-2"></i>
+                Practifly AI賽事校本評核分析報告 © 2025
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // 學校數據（與實際文件匹配）
+        const schools = [
+            "南元朗官立小學",
+            "聖公會德田李兆強小學",
+            "中華基督教會元朗真光小學",
+            "嘉諾撒小學(新蒲崗)",
+            "聖公會主風小學",
+            "仁德天主教小學",
+            "天主教聖安德肋小學",
+            "中華基督教會何福堂小學",
+            "聖公會牧愛小學",
+            "中華基督教會基慈小學",
+            "中華基督教會基真小學",
+            "中華基督教會基法小學",
+            "葛量洪校友會黃埔學校",
+            "中華基督教會基慧小學",
+            "中華基督教會拔臣小學",
+            "中華基督教會協和小學(長沙灣)",
+            "中華基督教會全完第二小學",
+            "仁愛堂劉皇發夫人小學",
+            "中華基督教會基灣小學",
+            "中華基督教會基法小學(油塘)",
+            "中華基督教會灣仔堂基道小學",
+            "中華基督教會基華小學"
+        ];
+
+        // DOM元素
+        const searchInput = document.getElementById('school-search');
+        const searchBtn = document.getElementById('search-btn');
+        const autocompleteDropdown = document.getElementById('autocomplete-dropdown');
+        const searchResults = document.getElementById('search-results');
+        const schoolList = document.getElementById('school-list');
+        const gradeSelection = document.getElementById('grade-selection');
+
+        // 自動完成功能
+        searchInput.addEventListener('input', handleInput);
+        searchInput.addEventListener('focus', handleInput);
+        document.addEventListener('click', (e) => {
+            if (!searchInput.contains(e.target) && !autocompleteDropdown.contains(e.target)) {
+                autocompleteDropdown.classList.add('hidden');
+            }
+        });
+
+        // 鍵盤導航
+        searchInput.addEventListener('keydown', (e) => {
+            const items = autocompleteDropdown.querySelectorAll('.autocomplete-item');
+            const highlightedItem = autocompleteDropdown.querySelector('.autocomplete-item.highlighted');
+            let index = Array.from(items).indexOf(highlightedItem);
+
+            switch(e.key) {
+                case 'ArrowDown':
+                    e.preventDefault();
+                    if (items.length === 0) return;
+                    
+                    if (highlightedItem) {
+                        highlightedItem.classList.remove('highlighted');
+                    }
+                    
+                    const nextIndex = index === -1 || index === items.length - 1 ? 0 : index + 1;
+                    items[nextIndex].classList.add('highlighted');
+                    break;
+                    
+                case 'ArrowUp':
+                    e.preventDefault();
+                    if (items.length === 0) return;
+                    
+                    if (highlightedItem) {
+                        highlightedItem.classList.remove('highlighted');
+                    }
+                    
+                    const prevIndex = index <= 0 ? items.length - 1 : index - 1;
+                    items[prevIndex].classList.add('highlighted');
+                    break;
+                    
+                case 'Enter':
+                    if (highlightedItem) {
+                        e.preventDefault();
+                        selectItem(highlightedItem.textContent);
+                    }
+                    break;
+                    
+                case 'Escape':
+                    autocompleteDropdown.classList.add('hidden');
+                    break;
+            }
+        });
+
+        function handleInput() {
+            const searchTerm = searchInput.value.trim().toLowerCase();
+            
+            if (searchTerm.length < 1) {
+                autocompleteDropdown.classList.add('hidden');
+                return;
+            }
+            
+            // 模糊搜索匹配學校
+            const matchedSchools = schools.filter(school => 
+                school.toLowerCase().includes(searchTerm)
+            );
+            
+            if (matchedSchools.length > 0) {
+                showAutocompleteResults(matchedSchools);
+            } else {
+                autocompleteDropdown.classList.add('hidden');
+            }
+        }
+
+        function showAutocompleteResults(results) {
+            autocompleteDropdown.innerHTML = '';
+            autocompleteDropdown.classList.remove('hidden');
+            
+            results.forEach(school => {
+                const item = document.createElement('div');
+                item.className = 'autocomplete-item';
+                item.textContent = school;
+                
+                // 鼠標懸停高亮
+                item.addEventListener('mouseenter', () => {
+                    document.querySelectorAll('.autocomplete-item').forEach(i => {
+                        i.classList.remove('highlighted');
+                    });
+                    item.classList.add('highlighted');
+                });
+                
+                // 點擊選擇
+                item.addEventListener('click', () => {
+                    selectItem(school);
+                });
+                
+                autocompleteDropdown.appendChild(item);
+            });
+        }
+
+        function selectItem(school) {
+            searchInput.value = school;
+            autocompleteDropdown.classList.add('hidden');
+            // 自動顯示年級選擇
+            showGradeSelection(school);
+        }
+
+        // 搜索按鈕點擊事件
+        searchBtn.addEventListener('click', performSearch);
+        
+        // 回車鍵搜索
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !autocompleteDropdown.classList.contains('hidden')) {
+                e.preventDefault();
+            }
+        });
+
+        function performSearch() {
+            const searchTerm = searchInput.value.trim().toLowerCase();
+            
+            if (searchTerm.length < 1) {
+                searchResults.classList.add('hidden');
+                return;
+            }
+            
+            // 過濾學校
+            const matchedSchools = schools.filter(school => 
+                school.toLowerCase().includes(searchTerm)
+            );
+            
+            if (matchedSchools.length > 0) {
+                // 顯示結果
+                searchResults.classList.remove('hidden');
+                schoolList.innerHTML = '';
+                
+                // 添加匹配的學校
+                matchedSchools.forEach(school => {
+                    const schoolItem = document.createElement('div');
+                    schoolItem.className = 'p-2 hover:bg-gray-100 rounded cursor-pointer transition-colors';
+                    schoolItem.textContent = school;
+                    schoolItem.addEventListener('click', () => {
+                        showGradeSelection(school);
+                        
+                        // 高亮選擇的學校
+                        document.querySelectorAll('#school-list > div').forEach(item => {
+                            item.classList.remove('bg-indigo-50', 'font-medium');
+                        });
+                        schoolItem.classList.add('bg-indigo-50', 'font-medium');
+                    });
+                    schoolList.appendChild(schoolItem);
+                });
+            } else {
+                // 沒有找到結果
+                schoolList.innerHTML = '<p class="text-gray-500">沒有找到匹配的學校，請嘗試其他搜索詞。</p>';
+                searchResults.classList.remove('hidden');
+                gradeSelection.classList.add('hidden');
+            }
+        }
+
+        function showGradeSelection(school) {
+            // 顯示年級選擇
+            gradeSelection.classList.remove('hidden');
+            // 保存選擇的學校
+            localStorage.setItem('selectedSchool', school);
+            // 顯示搜索結果容器
+            searchResults.classList.remove('hidden');
+        }
+
+        // 年級點擊事件 - 修復了文件名轉換問題
+        document.querySelectorAll('.grade-item.active').forEach(item => {
+            item.addEventListener('click', function() {
+                const selectedSchool = localStorage.getItem('selectedSchool');
+                const grade = this.getAttribute('data-grade');
+                
+                if (selectedSchool && grade) {
+                    // 構建報告URL（精確匹配文件命名規則）
+                    // 移除空格但保留所有特殊字符
+                    const fileName = selectedSchool.replace(/\s+/g, '') + '_report_' + grade + '.html';
+                    // 嘗試跳轉到報告頁面
+                    window.location.href = fileName;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
