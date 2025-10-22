@@ -332,7 +332,7 @@
         function handleInput() {
             const searchTerm = searchInput.value.trim().toLowerCase();
             
-            if (searchTerm.length < 0) {
+            if (searchTerm.length <= 0) {
                 autocompleteDropdown.classList.add('hidden');
                 return;
             }
