@@ -1657,7 +1657,40 @@
         // 中国地图变量
         let chinaMapChart = null;
 
-        // 初始化中国地图 - 使用阿里云DataV GeoJSON API
+        // GeoJSON 数据源列表（多个备选源，使用可靠的 CDN）
+        const geoJSONSources = [
+            'https://cdn.jsdelivr.net/npm/china-map-geojson@1.0.4/china.json',
+            'https://fastly.jsdelivr.net/npm/china-map-geojson@1.0.4/china.json',
+            'https://cdn.jsdelivr.net/gh/apache/echarts-www@gh-pages/zh/documents/asset/geo/country/china-contour.json',
+            'https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json'
+        ];
+
+        // 尝试从多个源获取数据
+        async function fetchGeoJSONWithFallback() {
+            for (const url of geoJSONSources) {
+                try {
+                    console.log('Trying to fetch from:', url);
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+                    const response = await fetch(url, {
+                        mode: 'cors',
+                        signal: controller.signal
+                    });
+                    clearTimeout(timeoutId);
+
+                    if (response.ok) {
+                        console.log('Successfully fetched from:', url);
+                        return await response.json();
+                    }
+                } catch (e) {
+                    console.warn(`Failed to fetch from ${url}:`, e.message);
+                }
+            }
+            throw new Error('All GeoJSON sources failed');
+        }
+
+        // 初始化中国地图 - 使用多源备选方案
         async function initChinaMap() {
             const chartDom = document.getElementById('chinaMapChart');
             if (!chartDom) return;
@@ -1673,9 +1706,8 @@
             });
 
             try {
-                // 从阿里云DataV获取中国地图GeoJSON数据
-                const response = await fetch('https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json');
-                const chinaGeoJSON = await response.json();
+                // 从多个备选源获取中国地图GeoJSON数据
+                const chinaGeoJSON = await fetchGeoJSONWithFallback();
 
                 // 注册地图
                 echarts.registerMap('china', chinaGeoJSON);
