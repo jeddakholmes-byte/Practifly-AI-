@@ -9,6 +9,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <!-- ECharts for China Map -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+HK:wght@300;400;500;700;900&display=swap"
         rel="stylesheet">
 
@@ -791,141 +793,9 @@
 
             <div class="grid grid-cols-12 gap-5">
                 <div class="col-span-9" id="mapView">
-                    <div class="china-map-container">
-                        <!-- Embedded China Map SVG -->
-                        <svg class="china-map-svg" viewBox="0 0 700 580" preserveAspectRatio="xMidYMid meet">
-                            <defs>
-                                <linearGradient id="mapGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:rgba(139,124,182,0.3)" />
-                                    <stop offset="100%" style="stop-color:rgba(139,124,182,0.1)" />
-                                </linearGradient>
-                                <filter id="glow">
-                                    <feGaussianBlur stdDeviation="2" result="coloredBlur" />
-                                    <feMerge>
-                                        <feMergeNode in="coloredBlur" />
-                                        <feMergeNode in="SourceGraphic" />
-                                    </feMerge>
-                                </filter>
-                            </defs>
-
-                            <!-- China mainland outline - detailed path -->
-                            <path class="province" d="M180,bindx180 
-                                L160,160 L140,140 L120,130 L100,125 L80,130 L70,145 L75,165 L85,180 
-                                L80,200 L70,220 L75,245 L90,260 L85,280 L75,300 L80,325 L100,340 
-                                L120,350 L140,345 L160,355 L180,370 L200,380 L220,375 L240,385 
-                                L260,395 L280,390 L300,400 L320,410 L340,405 L360,415 L380,425 
-                                L400,430 L420,425 L440,435 L460,445 L480,450 L495,445 L505,435 
-                                L515,420 L525,400 L540,385 L555,365 L565,345 L575,320 L580,295 
-                                L590,270 L600,245 L605,220 L595,195 L580,175 L565,160 L550,150 
-                                L535,145 L520,140 L500,130 L480,120 L460,110 L440,105 L420,100 
-                                L400,95 L380,92 L360,90 L340,88 L320,90 L300,95 L280,100 
-                                L260,110 L240,125 L220,145 L200,165 L180,180 Z" />
-
-                            <!-- Inner provinces simplified -->
-                            <path class="province" d="M420,180 L480,175 L510,200 L500,240 L460,250 L420,235 L400,200 Z"
-                                opacity="0.5" />
-                            <path class="province" d="M300,200 L360,195 L390,220 L380,260 L340,270 L300,250 L290,220 Z"
-                                opacity="0.5" />
-                            <path class="province" d="M350,280 L400,275 L430,300 L420,340 L380,350 L350,330 L340,300 Z"
-                                opacity="0.5" />
-                            <path class="province highlight"
-                                d="M480,380 L520,375 L540,400 L535,430 L510,445 L480,435 L470,410 Z" opacity="0.6" />
-
-                            <!-- Taiwan -->
-                            <path class="province" d="M565,380 L575,370 L585,380 L580,410 L570,420 L560,405 Z" />
-
-                            <!-- Hainan -->
-                            <path class="province highlight"
-                                d="M400,470 L430,465 L445,485 L435,510 L405,515 L390,495 Z" />
-
-                            <!-- Hong Kong/Macau region glow -->
-                            <ellipse cx="510" cy="435" rx="40" ry="25" fill="rgba(236,72,153,0.2)"
-                                filter="url(#glow)" />
-                        </svg>
-
-                        <!-- City Markers with detailed info -->
-                        <div class="city-marker" style="left: 73%; top: 77%;">
-                            <div class="city-dot"
-                                style="width: 20px; height: 20px; background: #EC4899; color: #EC4899;"></div>
-                            <div class="city-label text-pink-400"
-                                style="left: calc(100% + 8px); top: 50%; transform: translateY(-50%);">香港</div>
-                            <div class="city-info">
-                                <div class="font-bold text-pink-400 mb-1">🇭🇰 香港</div>
-                                <div class="text-gray-300">107 所學校</div>
-                                <div class="text-pink-400 font-semibold">7,000 學生</div>
-                            </div>
-                        </div>
-
-                        <div class="city-marker" style="left: 70%; top: 79%;">
-                            <div class="city-dot"
-                                style="width: 12px; height: 12px; background: #A855F7; color: #A855F7;"></div>
-                            <div class="city-label text-purple-400"
-                                style="right: calc(100% + 8px); top: 50%; transform: translateY(-50%);">澳門</div>
-                            <div class="city-info">
-                                <div class="font-bold text-purple-400 mb-1">🇲🇴 澳門</div>
-                                <div class="text-gray-300">3 所學校</div>
-                                <div class="text-purple-400 font-semibold">450 學生</div>
-                            </div>
-                        </div>
-
-                        <div class="city-marker" style="left: 74%; top: 73%;">
-                            <div class="city-dot"
-                                style="width: 14px; height: 14px; background: #F97316; color: #F97316;"></div>
-                            <div class="city-label text-orange-400"
-                                style="left: calc(100% + 8px); top: 50%; transform: translateY(-50%);">深圳</div>
-                            <div class="city-info">
-                                <div class="font-bold text-orange-400 mb-1">🏙️ 深圳</div>
-                                <div class="text-gray-300">8 所學校</div>
-                                <div class="text-orange-400 font-semibold">850 學生</div>
-                            </div>
-                        </div>
-
-                        <div class="city-marker" style="left: 68%; top: 70%;">
-                            <div class="city-dot"
-                                style="width: 13px; height: 13px; background: #F59E0B; color: #F59E0B;"></div>
-                            <div class="city-label text-amber-400"
-                                style="right: calc(100% + 8px); top: 50%; transform: translateY(-50%);">廣州</div>
-                            <div class="city-info">
-                                <div class="font-bold text-amber-400 mb-1">🌆 廣州·佛山</div>
-                                <div class="text-gray-300">4 所學校</div>
-                                <div class="text-amber-400 font-semibold">600 學生</div>
-                            </div>
-                        </div>
-
-                        <div class="city-marker" style="left: 85%; top: 48%;">
-                            <div class="city-dot"
-                                style="width: 16px; height: 16px; background: #3B82F6; color: #3B82F6;"></div>
-                            <div class="city-label text-blue-400"
-                                style="left: calc(100% + 8px); top: 50%; transform: translateY(-50%);">上海</div>
-                            <div class="city-info">
-                                <div class="font-bold text-blue-400 mb-1">🌟 上海</div>
-                                <div class="text-gray-300">21 所學校</div>
-                                <div class="text-blue-400 font-semibold">1,680 學生</div>
-                            </div>
-                        </div>
-
-                        <div class="city-marker" style="left: 48%; top: 55%;">
-                            <div class="city-dot"
-                                style="width: 13px; height: 13px; background: #22C55E; color: #22C55E;"></div>
-                            <div class="city-label text-emerald-400"
-                                style="left: calc(100% + 8px); top: 50%; transform: translateY(-50%);">重慶</div>
-                            <div class="city-info">
-                                <div class="font-bold text-emerald-400 mb-1">🏔️ 重慶</div>
-                                <div class="text-gray-300">5 所學校</div>
-                                <div class="text-emerald-400 font-semibold">620 學生</div>
-                            </div>
-                        </div>
-
-                        <div class="city-marker" style="left: 68%; top: 25%;">
-                            <div class="city-dot"
-                                style="width: 12px; height: 12px; background: #6366F1; color: #6366F1;"></div>
-                            <div class="city-label text-indigo-400"
-                                style="left: calc(100% + 8px); top: 50%; transform: translateY(-50%);">北京</div>
-                            <div class="city-info">
-                                <div class="font-bold text-indigo-400 mb-1">🏛️ 北京</div>
-                                <div class="text-gray-300">3 所學校</div>
-                                <div class="text-indigo-400 font-semibold">350 學生</div>
-                            </div>
+                    <div class="china-map-container" style="position: relative;">
+                        <!-- ECharts China Map Container -->
+                        <div id="chinaMapChart" style="width: 100%; height: 100%; position: absolute; top: 0; left: 0;">
                         </div>
                     </div>
                 </div>
@@ -1661,6 +1531,7 @@
             updateTime();
             setInterval(updateTime, 1000);
             initCharts();
+            initChinaMap();
             generateCityList();
             onCityChange();
         });
@@ -1781,6 +1652,194 @@
             const tbody = document.getElementById('gradeTableBody');
             tbody.innerHTML = '';
             currentSchool.grades.forEach(g => { const d = generateGradeData(currentSchool.id, g); const tr = document.createElement('tr'); tr.className = g === grade ? 'bg-purple-500/15' : ''; tr.innerHTML = `<td class="${g === grade ? 'font-semibold text-purple-400' : ''}">${g}</td><td>${d.students}人</td><td class="${d.avgScore >= 80 ? 'text-emerald-400' : ''}">${d.avgScore.toFixed(1)}</td><td>${d.passRate.toFixed(1)}%</td>`; tbody.appendChild(tr); });
+        }
+
+        // 中国地图变量
+        let chinaMapChart = null;
+
+        // 初始化中国地图 - 使用阿里云DataV GeoJSON API
+        async function initChinaMap() {
+            const chartDom = document.getElementById('chinaMapChart');
+            if (!chartDom) return;
+
+            chinaMapChart = echarts.init(chartDom);
+
+            // 显示加载状态
+            chinaMapChart.showLoading({
+                text: '地圖數據加載中...',
+                color: '#8B7CB6',
+                textColor: '#fff',
+                maskColor: 'rgba(15, 15, 35, 0.8)'
+            });
+
+            try {
+                // 从阿里云DataV获取中国地图GeoJSON数据
+                const response = await fetch('https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json');
+                const chinaGeoJSON = await response.json();
+
+                // 注册地图
+                echarts.registerMap('china', chinaGeoJSON);
+
+                // 城市数据 - 经纬度和学校信息
+                const cityData = [
+                    { name: '香港', value: [114.17, 22.32, 7000], schools: 107, color: '#EC4899', emoji: '🇭🇰' },
+                    { name: '澳門', value: [113.55, 22.20, 450], schools: 3, color: '#A855F7', emoji: '🇲🇴' },
+                    { name: '深圳', value: [114.07, 22.62, 850], schools: 8, color: '#F97316', emoji: '🏙️' },
+                    { name: '廣州', value: [113.26, 23.13, 600], schools: 4, color: '#F59E0B', emoji: '🌆' },
+                    { name: '上海', value: [121.47, 31.23, 1680], schools: 21, color: '#3B82F6', emoji: '🌟' },
+                    { name: '重慶', value: [106.55, 29.56, 620], schools: 5, color: '#22C55E', emoji: '🏔️' },
+                    { name: '北京', value: [116.41, 39.90, 350], schools: 3, color: '#6366F1', emoji: '🏛️' }
+                ];
+
+                // 高亮省份（大湾区相关）
+                const highlightProvinces = ['广东省', '香港特别行政区', '澳门特别行政区'];
+
+                const option = {
+                    backgroundColor: 'transparent',
+                    tooltip: {
+                        trigger: 'item',
+                        backgroundColor: 'rgba(15, 15, 35, 0.95)',
+                        borderColor: 'rgba(139, 124, 182, 0.5)',
+                        borderWidth: 1,
+                        padding: [12, 16],
+                        textStyle: {
+                            color: '#fff',
+                            fontSize: 13
+                        },
+                        formatter: function (params) {
+                            if (params.seriesType === 'scatter') {
+                                const data = params.data;
+                                return `<div style="font-weight:bold;color:${data.color};margin-bottom:6px;">${data.emoji} ${data.name}</div>
+                                        <div style="color:#9CA3AF;margin-bottom:4px;">${data.schools} 所學校</div>
+                                        <div style="color:${data.color};font-weight:600;">${data.value[2].toLocaleString()} 學生</div>`;
+                            }
+                            return params.name;
+                        }
+                    },
+                    geo: {
+                        map: 'china',
+                        roam: true, // 允许缩放和平移
+                        zoom: 1.2,
+                        center: [108, 32],
+                        scaleLimit: {
+                            min: 0.8,
+                            max: 5
+                        },
+                        itemStyle: {
+                            areaColor: 'rgba(139, 124, 182, 0.15)',
+                            borderColor: 'rgba(139, 124, 182, 0.4)',
+                            borderWidth: 0.8
+                        },
+                        emphasis: {
+                            itemStyle: {
+                                areaColor: 'rgba(139, 124, 182, 0.35)',
+                                borderColor: 'rgba(139, 124, 182, 0.8)',
+                                borderWidth: 1.5
+                            },
+                            label: {
+                                show: false
+                            }
+                        },
+                        select: {
+                            itemStyle: {
+                                areaColor: 'rgba(236, 72, 153, 0.25)'
+                            }
+                        },
+                        regions: highlightProvinces.map(name => ({
+                            name: name,
+                            itemStyle: {
+                                areaColor: 'rgba(236, 72, 153, 0.25)',
+                                borderColor: 'rgba(236, 72, 153, 0.5)'
+                            }
+                        }))
+                    },
+                    series: [
+                        // 城市散点 - 涟漪效果
+                        {
+                            name: '參賽城市',
+                            type: 'effectScatter',
+                            coordinateSystem: 'geo',
+                            data: cityData.map(city => ({
+                                name: city.name,
+                                value: city.value,
+                                schools: city.schools,
+                                color: city.color,
+                                emoji: city.emoji,
+                                symbolSize: Math.sqrt(city.value[2]) / 3 + 8,
+                                itemStyle: {
+                                    color: city.color,
+                                    shadowBlur: 15,
+                                    shadowColor: city.color
+                                }
+                            })),
+                            rippleEffect: {
+                                brushType: 'stroke',
+                                scale: 3,
+                                period: 4
+                            },
+                            label: {
+                                show: true,
+                                formatter: '{b}',
+                                position: 'right',
+                                fontSize: 11,
+                                fontWeight: 600,
+                                color: '#fff',
+                                textShadowColor: 'rgba(0,0,0,0.8)',
+                                textShadowBlur: 4
+                            },
+                            zlevel: 2
+                        },
+                        // 城市连线 - 从香港到各城市
+                        {
+                            name: '連接線',
+                            type: 'lines',
+                            coordinateSystem: 'geo',
+                            zlevel: 1,
+                            effect: {
+                                show: true,
+                                period: 6,
+                                trailLength: 0.5,
+                                symbol: 'arrow',
+                                symbolSize: 5,
+                                color: 'rgba(236, 72, 153, 0.8)'
+                            },
+                            lineStyle: {
+                                color: 'rgba(236, 72, 153, 0.3)',
+                                width: 1,
+                                curveness: 0.3
+                            },
+                            data: [
+                                { coords: [[114.17, 22.32], [114.07, 22.62]] }, // 香港-深圳
+                                { coords: [[114.17, 22.32], [113.26, 23.13]] }, // 香港-广州
+                                { coords: [[114.17, 22.32], [121.47, 31.23]] }, // 香港-上海
+                                { coords: [[114.17, 22.32], [106.55, 29.56]] }, // 香港-重庆
+                                { coords: [[114.17, 22.32], [116.41, 39.90]] }, // 香港-北京
+                                { coords: [[114.17, 22.32], [113.55, 22.20]] }  // 香港-澳门
+                            ]
+                        }
+                    ]
+                };
+
+                chinaMapChart.hideLoading();
+                chinaMapChart.setOption(option);
+
+                // 响应窗口大小变化
+                window.addEventListener('resize', () => {
+                    chinaMapChart && chinaMapChart.resize();
+                });
+
+            } catch (error) {
+                console.error('加載地圖數據失敗:', error);
+                chinaMapChart.hideLoading();
+                // 显示错误信息
+                chartDom.innerHTML = `
+                    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:#9CA3AF;">
+                        <i class="fas fa-exclamation-triangle text-amber-400 text-3xl mb-3"></i>
+                        <p>地圖數據加載失敗</p>
+                        <p style="font-size:12px;margin-top:8px;">請檢查網絡連接後刷新頁面</p>
+                    </div>
+                `;
+            }
         }
 
         function initCharts() {
