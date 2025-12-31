@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practifly AI 大灣區數學精英挑戰賽 - 超級管理員數據中心</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+HK:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        * { font-family: 'Noto Sans HK', sans-serif; }
+        
+        body { 
+            background: linear-gradient(180deg, #0f0f23 0%, #1a1a3e 50%, #0f2847 100%); 
+            min-height: 100vh;
+        }
+        
+        .glass-card { 
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+            backdrop-filter: blur(20px); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+        }
+        
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        }
+        
+        .neon-border { 
+            box-shadow: 0 4px 30px rgba(139, 124, 182, 0.15), 0 8px 32px rgba(0, 0, 0, 0.3); 
+        }
+        
+        .stat-card { 
+            background: linear-gradient(145deg, rgba(107, 91, 149, 0.2), rgba(139, 124, 182, 0.05)); 
+            transition: all 0.3s ease; 
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-color, #8B7CB6), transparent);
+        }
+        
+        .stat-card:hover { 
+            transform: translateY(-4px); 
+            box-shadow: 0 12px 40px rgba(139, 124, 182, 0.25); 
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #8B7CB6, #5DADE2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .tab-btn { 
+            padding: 10px 20px; 
+            border-radius: 10px; 
+            font-weight: 600; 
+            transition: all 0.3s; 
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .tab-btn.active { 
+            background: linear-gradient(135deg, #6B5B95, #8B7CB6); 
+            box-shadow: 0 4px 15px rgba(139, 124, 182, 0.4);
+        }
+        .tab-btn:not(.active) { background: rgba(255,255,255,0.06); }
+        .tab-btn:not(.active):hover { background: rgba(139, 124, 182, 0.2); }
+        
+        .school-select { 
+            background: rgba(255, 255, 255, 0.06); 
+            border: 1px solid rgba(139, 124, 182, 0.3); 
+            color: white; 
+            padding: 10px 14px; 
+            border-radius: 10px; 
+            outline: none; 
+            cursor: pointer; 
+            transition: all 0.3s;
+            font-size: 13px;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%238B7CB6' viewBox='0 0 24 24'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 18px;
+            padding-right: 36px;
+        }
+        .school-select:hover, .school-select:focus { 
+            border-color: #8B7CB6; 
+            box-shadow: 0 0 15px rgba(139, 124, 182, 0.2);
+        }
+        .school-select option { background: #1a1a2e; color: white; }
+        
+        .grade-btn { 
+            transition: all 0.3s; 
+            border: 1px solid transparent; 
+            padding: 8px 14px; 
+            border-radius: 8px; 
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .grade-btn.active { 
+            border-color: #8B7CB6; 
+            background: rgba(139, 124, 182, 0.3);
+        }
+        .grade-btn:not(.active) { background: rgba(255,255,255,0.06); }
+        .grade-btn:not(.active):hover { background: rgba(139, 124, 182, 0.15); }
+        
+        .metric-card {
+            background: rgba(255,255,255,0.04);
+            border-radius: 14px;
+            padding: 18px;
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: all 0.3s;
+        }
+        .metric-card:hover {
+            border-color: rgba(139, 124, 182, 0.3);
+        }
+        
+        .data-table { width: 100%; border-collapse: separate; border-spacing: 0 4px; }
+        .data-table th { 
+            background: rgba(139, 124, 182, 0.2); 
+            padding: 12px; 
+            text-align: left; 
+            font-size: 11px; 
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .data-table td { 
+            background: rgba(255, 255, 255, 0.02); 
+            padding: 10px 12px; 
+            font-size: 13px;
+        }
+        .data-table tr:hover td { background: rgba(139, 124, 182, 0.1); }
+        
+        .scrollbar-thin::-webkit-scrollbar { width: 5px; }
+        .scrollbar-thin::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); border-radius: 3px; }
+        .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(139,124,182,0.4); border-radius: 3px; }
+        
+        .level-tab { 
+            padding: 8px 16px; 
+            font-size: 12px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        .level-tab.active { background: linear-gradient(135deg, #6B5B95, #8B7CB6); }
+        .level-tab:not(.active) { background: rgba(255,255,255,0.06); }
+        .level-tab:not(.active):hover { background: rgba(139,124,182,0.2); }
+        
+        .region-card {
+            background: rgba(255,255,255,0.04);
+            border-radius: 14px;
+            padding: 20px;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .region-card:hover { border-color: rgba(139, 124, 182, 0.3); }
+        .region-card.selected { border-color: var(--region-color); background: rgba(139, 124, 182, 0.1); }
+        
+        .compare-bar {
+            height: 8px;
+            border-radius: 4px;
+            background: rgba(255,255,255,0.1);
+            overflow: hidden;
+        }
+        .compare-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.8s ease-out;
+        }
+        
+        .ranking-item {
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+        .ranking-item:hover {
+            background: rgba(139, 124, 182, 0.1);
+            border-left-color: #8B7CB6;
+            padding-left: 15px;
+        }
+        
+        .pulse-dot {
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .icon-box {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .highlight-value {
+            position: relative;
+        }
+        .highlight-value::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: currentColor;
+            opacity: 0.3;
+            border-radius: 1px;
+        }
+    </style>
+</head>
+<body class="text-white">
+    <!-- Header -->
+    <header class="glass-card px-6 py-4 sticky top-0 z-50 relative">
+        <div class="max-w-[1920px] mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/20">
+                    <i class="fas fa-cube text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold gradient-text">Practifly AI 數據中心</h1>
+                    <p class="text-xs text-gray-400 flex items-center gap-2">
+                        <span>2025 大灣區校際數理思維精英挑戰賽</span>
+                        <span class="w-1 h-1 bg-gray-500 rounded-full"></span>
+                        <span>Super Admin Dashboard</span>
+                    </p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-5">
+                <div class="flex items-center gap-2 px-3 py-1.5 bg-red-500/10 rounded-lg border border-red-500/20">
+                    <span class="text-sm">🇭🇰</span>
+                    <span class="text-xs font-medium text-red-300">香港教育科技</span>
+                </div>
+                <div class="flex items-center space-x-2 px-3 py-1.5 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                    <span class="pulse-dot w-2 h-2 bg-emerald-400 rounded-full"></span>
+                    <span class="text-xs text-emerald-300 font-medium">系統運行中</span>
+                </div>
+                <div class="text-xs text-gray-400 flex items-center gap-2">
+                    <i class="far fa-clock text-purple-400"></i>
+                    <span id="currentTime" class="font-mono"></span>
+                </div>
+                <div class="flex items-center space-x-2 pl-4 border-l border-white/10">
+                    <div class="w-9 h-9 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center text-xs font-bold">SA</div>
+                    <div>
+                        <p class="text-xs font-semibold">Super Admin</p>
+                        <p class="text-[10px] text-gray-500">管理員權限</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-[1920px] mx-auto px-6 py-5">
+        <!-- Stats Overview -->
+        <div class="grid grid-cols-6 gap-4 mb-5">
+            <div class="stat-card glass-card rounded-xl p-5 relative" style="--accent-color: #3B82F6;">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="icon-box bg-blue-500/20"><i class="fas fa-school text-blue-400"></i></div>
+                    <span class="badge bg-blue-500/15 text-blue-400">全國</span>
+                </div>
+                <p class="text-3xl font-bold mb-1" id="totalSchools">0</p>
+                <p class="text-xs text-gray-400">參賽學校</p>
+                <div class="mt-3 pt-3 border-t border-white/5 flex justify-between text-[11px] text-gray-500">
+                    <span>小學 94 所</span>
+                    <span>中學 63 所</span>
+                </div>
+            </div>
+            
+            <div class="stat-card glass-card rounded-xl p-5 relative" style="--accent-color: #A855F7;">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="icon-box bg-purple-500/20"><i class="fas fa-users text-purple-400"></i></div>
+                    <span class="badge bg-purple-500/15 text-purple-400">初賽</span>
+                </div>
+                <p class="text-3xl font-bold mb-1" id="totalParticipants">0</p>
+                <p class="text-xs text-gray-400">初賽總人數</p>
+                <div class="mt-3 pt-3 border-t border-white/5 flex items-center gap-2 text-[11px]">
+                    <i class="fas fa-arrow-up text-emerald-400"></i>
+                    <span class="text-emerald-400">較去年 +38.5%</span>
+                </div>
+            </div>
+            
+            <div class="stat-card glass-card rounded-xl p-5 relative" style="--accent-color: #F59E0B;">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="icon-box bg-amber-500/20"><i class="fas fa-medal text-amber-400"></i></div>
+                    <span class="badge bg-amber-500/15 text-amber-400">複賽</span>
+                </div>
+                <p class="text-3xl font-bold mb-1" id="semifinalCount">0</p>
+                <p class="text-xs text-gray-400">複賽晉級人數</p>
+                <div class="mt-3 pt-3 border-t border-white/5 text-[11px] text-gray-500">
+                    晉級率 <span class="text-amber-400 font-semibold">47.8%</span>
+                </div>
+            </div>
+            
+            <div class="stat-card glass-card rounded-xl p-5 relative" style="--accent-color: #EF4444;">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="icon-box bg-red-500/20"><i class="fas fa-crown text-red-400"></i></div>
+                    <span class="badge bg-red-500/15 text-red-400">決賽</span>
+                </div>
+                <p class="text-3xl font-bold mb-1" id="finalCount">0</p>
+                <p class="text-xs text-gray-400">決賽晉級人數</p>
+                <div class="mt-3 pt-3 border-t border-white/5 text-[11px] text-gray-500">
+                    精英率 <span class="text-red-400 font-semibold">10.7%</span>
+                </div>
+            </div>
+            
+            <div class="stat-card glass-card rounded-xl p-5 relative" style="--accent-color: #10B981;">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="icon-box bg-emerald-500/20"><i class="fas fa-chart-line text-emerald-400"></i></div>
+                    <span class="badge bg-emerald-500/15 text-emerald-400">平均</span>
+                </div>
+                <div class="flex items-baseline gap-1">
+                    <p class="text-3xl font-bold">76.8</p>
+                    <p class="text-sm text-gray-400">分</p>
+                </div>
+                <p class="text-xs text-gray-400">全國平均分數</p>
+                <div class="mt-3 pt-3 border-t border-white/5 flex justify-between text-[11px]">
+                    <span class="text-pink-400">HK 77.2</span>
+                    <span class="text-orange-400">GBA 78.5</span>
+                    <span class="text-blue-400">SH 82.3</span>
+                </div>
+            </div>
+            
+            <div class="stat-card glass-card rounded-xl p-5 relative" style="--accent-color: #6366F1;">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="icon-box bg-indigo-500/20"><i class="fas fa-percentage text-indigo-400"></i></div>
+                    <span class="badge bg-indigo-500/15 text-indigo-400">及格率</span>
+                </div>
+                <div class="flex items-baseline gap-1">
+                    <p class="text-3xl font-bold">90.8</p>
+                    <p class="text-sm text-gray-400">%</p>
+                </div>
+                <p class="text-xs text-gray-400">整體及格率</p>
+                <div class="mt-3 pt-3 border-t border-white/5 text-[11px] text-gray-500">
+                    優秀率 <span class="text-amber-400 font-semibold">30.7%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map Section - Full Width -->
+        <div class="glass-card rounded-xl p-5 neon-border mb-5 relative">
+            <div class="flex items-center justify-between mb-4">
+                <div class="section-title mb-0">
+                    <div class="icon-box bg-purple-500/20"><i class="fas fa-map-marked-alt text-purple-400"></i></div>
+                    <div>
+                        <h2 class="text-lg font-bold">全國參賽學校分佈</h2>
+                        <p class="text-xs text-gray-400">覆蓋 9 個城市 · 190+ 優質學校</p>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <button class="tab-btn active" id="mapTabBtn" onclick="switchView('map')"><i class="fas fa-globe-asia mr-2"></i>地圖</button>
+                    <button class="tab-btn" id="listTabBtn" onclick="switchView('list')"><i class="fas fa-list mr-2"></i>列表</button>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-12 gap-5">
+                <div class="col-span-9" id="mapView">
+                    <div id="chinaMap" style="width: 100%; height: 420px; border-radius: 12px;"></div>
+                </div>
+                <div class="col-span-9 hidden" id="listView">
+                    <div class="grid grid-cols-3 gap-3 max-h-[420px] overflow-auto scrollbar-thin pr-2" id="cityListContainer"></div>
+                </div>
+                
+                <!-- Region Stats -->
+                <div class="col-span-3 space-y-3">
+                    <div class="bg-white/3 rounded-xl p-4 border border-white/5">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="w-3 h-3 rounded bg-pink-500"></span>
+                            <span class="text-sm font-semibold">港澳地區</span>
+                            <span class="ml-auto text-xs text-gray-400">70%</span>
+                        </div>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between items-center p-2 bg-white/3 rounded-lg">
+                                <span class="flex items-center gap-2"><span class="text-base">🇭🇰</span>香港</span>
+                                <span class="text-gray-300">107 所 · <span class="text-pink-400 font-semibold">7,000</span> 人</span>
+                            </div>
+                            <div class="flex justify-between items-center p-2 bg-white/3 rounded-lg">
+                                <span class="flex items-center gap-2"><span class="text-base">🇲🇴</span>澳門</span>
+                                <span class="text-gray-300">3 所 · <span class="text-purple-400 font-semibold">450</span> 人</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white/3 rounded-xl p-4 border border-white/5">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="w-3 h-3 rounded bg-orange-500"></span>
+                            <span class="text-sm font-semibold">大灣區內地</span>
+                            <span class="ml-auto text-xs text-gray-400">8%</span>
+                        </div>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between items-center p-2 bg-white/3 rounded-lg">
+                                <span>深圳</span>
+                                <span class="text-gray-300">8 所 · <span class="text-orange-400 font-semibold">850</span> 人</span>
+                            </div>
+                            <div class="flex justify-between items-center p-2 bg-white/3 rounded-lg">
+                                <span>廣州·佛山</span>
+                                <span class="text-gray-300">4 所 · <span class="text-amber-400 font-semibold">600</span> 人</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white/3 rounded-xl p-4 border border-white/5">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="w-3 h-3 rounded bg-blue-500"></span>
+                            <span class="text-sm font-semibold">全國其他城市</span>
+                            <span class="ml-auto text-xs text-gray-400">22%</span>
+                        </div>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between items-center p-2 bg-white/3 rounded-lg">
+                                <span>上海</span>
+                                <span class="text-gray-300">21 所 · <span class="text-blue-400 font-semibold">1,680</span> 人</span>
+                            </div>
+                            <div class="flex justify-between items-center p-2 bg-white/3 rounded-lg">
+                                <span>重慶·北京·其他</span>
+                                <span class="text-gray-300">14 所 · <span class="text-cyan-400 font-semibold">1,320</span> 人</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Regional Comparison -->
+        <div class="glass-card rounded-xl p-5 neon-border mb-5 relative">
+            <div class="flex items-center justify-between mb-5">
+                <div class="section-title mb-0">
+                    <div class="icon-box bg-cyan-500/20"><i class="fas fa-balance-scale text-cyan-400"></i></div>
+                    <div>
+                        <h2 class="text-lg font-bold">區域數據對比</h2>
+                        <p class="text-xs text-gray-400">選擇區域查看詳細表現對比</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Region Selection Cards -->
+            <div class="grid grid-cols-5 gap-4 mb-6">
+                <div class="region-card selected" style="--region-color: #EC4899;" onclick="selectRegion(this, 'hk')" data-region="hk">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="text-2xl">🇭🇰</span>
+                        <div>
+                            <div class="font-bold text-pink-400">香港</div>
+                            <div class="text-[11px] text-gray-400">107 所學校</div>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-xs">
+                            <span class="text-gray-400">平均分</span>
+                            <span class="font-bold text-pink-400 highlight-value">77.2</span>
+                        </div>
+                        <div class="flex justify-between text-xs">
+                            <span class="text-gray-400">及格率</span>
+                            <span class="font-semibold">91.5%</span>
+                        </div>
+                        <div class="flex justify-between text-xs">
+                            <span class="text-gray-400">優秀率</span>
+                            <span class="font-semibold">32.8%</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="region-card selected" style="--region-color: #F97316;" onclick="selectRegion(this, 'gba')" data-region="gba">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="text-2xl">🏙️</span>
+                        <div>
+                            <div class="font-bold text-orange-400">大灣區內地</div>
+                            <div class="text-[11px] text-gray-400">12 所學校</div>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-xs">
+                            <span class="text-gray-400">平均分</span>
+                            <span class="font-bold text-orange-400 highlight-value">78.5</span>
+                        </div>
+                        <div class="flex justify-between text-xs">
+                            <span class="text-gray-400">及格率</span>
+                            <span class="font-semibold">89.2%</span>
+                        </div>
+                        <div class="flex justify-between text-xs">
+                            <span class="text-gray-400">優秀率</span>
+                            <span class="font-semibold">35.2%</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="region-card selected" style="--region-color: #3B82F6;" onclick="selectRegion(this, 'sh')" data-region="sh">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="text-2xl">🌟</span>
+                        <div>
+                            <div class="font-bold text-blue-400">上海</div>
+                            <div class="text-[11px] text-gray-400">21 所學校</div>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-xs">
+                            <span class="text-gray-400">平均分</span>
+                            <span class="font-bold text-blue-400 highlight-value">82.3</span>
+                        </div>
+                        <div class="flex justify-between text-xs">
+                            <span class="text-gray-400">及格率</span>
+                            <span class="font-semibold">93.8%</span>
+                        </div>
+                        <div class="flex justify-between text-xs">
+                            <span class="text-gray-400">優秀率</span>
+                            <span class="font-semibold">42.5%</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="region-card" style="--region-color: #22C55E;" onclick="selectRegion(this, 'cq')" data-region="cq">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="text-2xl">🏔️</span>
+                        <div>
+                            <div class="font-bold text-emerald-400">重慶</div>
+                            <div class="text-[11px] text-gray-400">5 所學校</div>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-xs">
+                            <span class="text-gray-400">平均分</span>
+                            <span class="font-bold text-emerald-400 highlight-value">75.8</span>
+                        </div>
+                        <div class="flex justify-between text-xs">
+                            <span class="text-gray-400">及格率</span>
+                            <span class="font-semibold">88.5%</span>
+                        </div>
+                        <div class="flex justify-between text-xs">
+                            <span class="text-gray-400">優秀率</span>
+                            <span class="font-semibold">28.9%</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="region-card" style="--region-color: #A855F7;" onclick="selectRegion(this, 'mo')" data-region="mo">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="text-2xl">🇲🇴</span>
+                        <div>
+                            <div class="font-bold text-purple-400">澳門</div>
+                            <div class="text-[11px] text-gray-400">3 所學校</div>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-xs">
+                            <span class="text-gray-400">平均分</span>
+                            <span class="font-bold text-purple-400 highlight-value">74.6</span>
+                        </div>
+                        <div class="flex justify-between text-xs">
+                            <span class="text-gray-400">及格率</span>
+                            <span class="font-semibold">87.2%</span>
+                        </div>
+                        <div class="flex justify-between text-xs">
+                            <span class="text-gray-400">優秀率</span>
+                            <span class="font-semibold">26.5%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Comparison Bars -->
+            <div class="grid grid-cols-3 gap-6 mb-6">
+                <div class="metric-card">
+                    <h4 class="text-sm font-semibold mb-4 flex items-center gap-2">
+                        <i class="fas fa-star text-amber-400 text-xs"></i>
+                        平均分數對比
+                    </h4>
+                    <div class="space-y-3" id="scoreCompare">
+                        <div class="flex items-center gap-3">
+                            <span class="w-16 text-xs text-pink-400 font-medium">香港</span>
+                            <div class="flex-1 compare-bar"><div class="compare-bar-fill bg-pink-500" style="width: 77.2%;"></div></div>
+                            <span class="w-10 text-xs font-bold text-right">77.2</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="w-16 text-xs text-orange-400 font-medium">大灣區</span>
+                            <div class="flex-1 compare-bar"><div class="compare-bar-fill bg-orange-500" style="width: 78.5%;"></div></div>
+                            <span class="w-10 text-xs font-bold text-right">78.5</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="w-16 text-xs text-blue-400 font-medium">上海</span>
+                            <div class="flex-1 compare-bar"><div class="compare-bar-fill bg-blue-500" style="width: 82.3%;"></div></div>
+                            <span class="w-10 text-xs font-bold text-right">82.3</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="metric-card">
+                    <h4 class="text-sm font-semibold mb-4 flex items-center gap-2">
+                        <i class="fas fa-check-circle text-emerald-400 text-xs"></i>
+                        及格率對比
+                    </h4>
+                    <div class="space-y-3" id="passCompare">
+                        <div class="flex items-center gap-3">
+                            <span class="w-16 text-xs text-pink-400 font-medium">香港</span>
+                            <div class="flex-1 compare-bar"><div class="compare-bar-fill bg-pink-500" style="width: 91.5%;"></div></div>
+                            <span class="w-10 text-xs font-bold text-right">91.5%</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="w-16 text-xs text-orange-400 font-medium">大灣區</span>
+                            <div class="flex-1 compare-bar"><div class="compare-bar-fill bg-orange-500" style="width: 89.2%;"></div></div>
+                            <span class="w-10 text-xs font-bold text-right">89.2%</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="w-16 text-xs text-blue-400 font-medium">上海</span>
+                            <div class="flex-1 compare-bar"><div class="compare-bar-fill bg-blue-500" style="width: 93.8%;"></div></div>
+                            <span class="w-10 text-xs font-bold text-right">93.8%</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="metric-card">
+                    <h4 class="text-sm font-semibold mb-4 flex items-center gap-2">
+                        <i class="fas fa-trophy text-purple-400 text-xs"></i>
+                        優秀率對比
+                    </h4>
+                    <div class="space-y-3" id="excellentCompare">
+                        <div class="flex items-center gap-3">
+                            <span class="w-16 text-xs text-pink-400 font-medium">香港</span>
+                            <div class="flex-1 compare-bar"><div class="compare-bar-fill bg-pink-500" style="width: 65.6%;"></div></div>
+                            <span class="w-10 text-xs font-bold text-right">32.8%</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="w-16 text-xs text-orange-400 font-medium">大灣區</span>
+                            <div class="flex-1 compare-bar"><div class="compare-bar-fill bg-orange-500" style="width: 70.4%;"></div></div>
+                            <span class="w-10 text-xs font-bold text-right">35.2%</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="w-16 text-xs text-blue-400 font-medium">上海</span>
+                            <div class="flex-1 compare-bar"><div class="compare-bar-fill bg-blue-500" style="width: 85%;"></div></div>
+                            <span class="w-10 text-xs font-bold text-right">42.5%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Learning Analysis & Rankings -->
+        <div class="grid grid-cols-12 gap-5 mb-5">
+            <!-- Learning Analysis -->
+            <div class="col-span-7 glass-card rounded-xl p-5 neon-border relative">
+                <div class="flex items-center justify-between mb-5">
+                    <div class="section-title mb-0">
+                        <div class="icon-box bg-indigo-500/20"><i class="fas fa-chart-radar text-indigo-400"></i></div>
+                        <div>
+                            <h2 class="text-lg font-bold">學習範疇表現分析</h2>
+                            <p class="text-xs text-gray-400">按香港教育局數學課程框架</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="flex space-x-1 bg-white/5 rounded-lg p-1">
+                            <button class="level-tab active" id="primaryTab" onclick="switchLevel('primary')">小學</button>
+                            <button class="level-tab" id="secondaryTab" onclick="switchLevel('secondary')">中學</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-5">
+                    <div class="metric-card">
+                        <h3 class="text-xs font-semibold mb-3 text-gray-300">學習範疇雷達</h3>
+                        <div style="height: 200px;"><canvas id="areaRadarChart"></canvas></div>
+                    </div>
+                    <div class="metric-card">
+                        <h3 class="text-xs font-semibold mb-3 text-gray-300">單元表現對比</h3>
+                        <div style="height: 200px;"><canvas id="unitBarChart"></canvas></div>
+                    </div>
+                </div>
+                
+                <div class="flex justify-center gap-8 mt-4 py-3 bg-white/3 rounded-lg">
+                    <span class="flex items-center gap-2 text-sm">
+                        <span class="w-4 h-4 rounded bg-pink-500"></span>
+                        <span class="text-pink-400 font-medium">香港</span>
+                    </span>
+                    <span class="flex items-center gap-2 text-sm">
+                        <span class="w-4 h-4 rounded bg-orange-500"></span>
+                        <span class="text-orange-400 font-medium">大灣區</span>
+                    </span>
+                    <span class="flex items-center gap-2 text-sm">
+                        <span class="w-4 h-4 rounded bg-blue-500"></span>
+                        <span class="text-blue-400 font-medium">上海</span>
+                    </span>
+                </div>
+                
+                <!-- Learning Areas -->
+                <div class="mt-4" id="primaryAreaDesc">
+                    <div class="grid grid-cols-5 gap-2">
+                        <div class="text-center p-3 bg-white/3 rounded-lg border border-white/5 hover:border-purple-500/30 transition-all cursor-pointer">
+                            <div class="w-9 h-9 mx-auto mb-2 rounded-lg bg-blue-500/20 flex items-center justify-center font-bold text-blue-400">N</div>
+                            <span class="text-[11px] font-medium">數</span>
+                        </div>
+                        <div class="text-center p-3 bg-white/3 rounded-lg border border-white/5 hover:border-purple-500/30 transition-all cursor-pointer">
+                            <div class="w-9 h-9 mx-auto mb-2 rounded-lg bg-purple-500/20 flex items-center justify-center font-bold text-purple-400">A</div>
+                            <span class="text-[11px] font-medium">代數</span>
+                        </div>
+                        <div class="text-center p-3 bg-white/3 rounded-lg border border-white/5 hover:border-purple-500/30 transition-all cursor-pointer">
+                            <div class="w-9 h-9 mx-auto mb-2 rounded-lg bg-emerald-500/20 flex items-center justify-center font-bold text-emerald-400">M</div>
+                            <span class="text-[11px] font-medium">度量</span>
+                        </div>
+                        <div class="text-center p-3 bg-white/3 rounded-lg border border-white/5 hover:border-purple-500/30 transition-all cursor-pointer">
+                            <div class="w-9 h-9 mx-auto mb-2 rounded-lg bg-amber-500/20 flex items-center justify-center font-bold text-amber-400">S</div>
+                            <span class="text-[11px] font-medium">圖形空間</span>
+                        </div>
+                        <div class="text-center p-3 bg-white/3 rounded-lg border border-white/5 hover:border-purple-500/30 transition-all cursor-pointer">
+                            <div class="w-9 h-9 mx-auto mb-2 rounded-lg bg-pink-500/20 flex items-center justify-center font-bold text-pink-400">D</div>
+                            <span class="text-[11px] font-medium">數據</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4 hidden" id="secondaryAreaDesc">
+                    <div class="grid grid-cols-3 gap-3">
+                        <div class="text-center p-3 bg-white/3 rounded-lg border border-white/5">
+                            <div class="w-10 h-10 mx-auto mb-2 rounded-lg bg-blue-500/20 flex items-center justify-center font-bold text-blue-400 text-lg">A</div>
+                            <span class="text-xs font-medium">數與代數</span>
+                        </div>
+                        <div class="text-center p-3 bg-white/3 rounded-lg border border-white/5">
+                            <div class="w-10 h-10 mx-auto mb-2 rounded-lg bg-emerald-500/20 flex items-center justify-center font-bold text-emerald-400 text-lg">S</div>
+                            <span class="text-xs font-medium">度量圖形空間</span>
+                        </div>
+                        <div class="text-center p-3 bg-white/3 rounded-lg border border-white/5">
+                            <div class="w-10 h-10 mx-auto mb-2 rounded-lg bg-pink-500/20 flex items-center justify-center font-bold text-pink-400 text-lg">D</div>
+                            <span class="text-xs font-medium">數據處理</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Rankings -->
+            <div class="col-span-5 glass-card rounded-xl p-5 neon-border relative">
+                <div class="section-title">
+                    <div class="icon-box bg-amber-500/20"><i class="fas fa-trophy text-amber-400"></i></div>
+                    <div>
+                        <h2 class="text-lg font-bold">學校排行榜 TOP 10</h2>
+                        <p class="text-xs text-gray-400">初賽平均分排名</p>
+                    </div>
+                </div>
+                
+                <div class="space-y-2 max-h-[420px] overflow-auto scrollbar-thin pr-1">
+                    <div class="ranking-item flex items-center justify-between bg-gradient-to-r from-amber-500/15 to-transparent rounded-lg p-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-gradient-to-br from-amber-400 to-amber-600 rounded-lg flex items-center justify-center text-sm font-bold">1</div>
+                            <div>
+                                <span class="font-semibold text-sm">聖公會德田李兆強小學</span>
+                                <p class="text-[11px] text-gray-400">🇭🇰 香港</p>
+                            </div>
+                        </div>
+                        <span class="text-lg font-bold text-amber-400">92.3</span>
+                    </div>
+                    
+                    <div class="ranking-item flex items-center justify-between bg-gradient-to-r from-gray-400/10 to-transparent rounded-lg p-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-gradient-to-br from-gray-300 to-gray-500 rounded-lg flex items-center justify-center text-sm font-bold">2</div>
+                            <div><span class="font-semibold text-sm">拔萃女小學</span><p class="text-[11px] text-gray-400">🇭🇰 香港</p></div>
+                        </div>
+                        <span class="text-lg font-bold text-gray-300">91.8</span>
+                    </div>
+                    
+                    <div class="ranking-item flex items-center justify-between bg-gradient-to-r from-orange-600/10 to-transparent rounded-lg p-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-gradient-to-br from-orange-500 to-orange-700 rounded-lg flex items-center justify-center text-sm font-bold">3</div>
+                            <div><span class="font-semibold text-sm">香港培正小學</span><p class="text-[11px] text-gray-400">🇭🇰 香港</p></div>
+                        </div>
+                        <span class="text-lg font-bold text-orange-400">90.5</span>
+                    </div>
+                    
+                    <div class="ranking-item flex items-center justify-between bg-white/3 rounded-lg p-3">
+                        <div class="flex items-center gap-3"><div class="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center font-semibold">4</div><div><span class="font-medium text-sm">上海市民办宏星小学</span><p class="text-[11px] text-gray-500">🇨🇳 上海</p></div></div><span class="font-bold">89.7</span>
+                    </div>
+                    
+                    <div class="ranking-item flex items-center justify-between bg-white/3 rounded-lg p-3">
+                        <div class="flex items-center gap-3"><div class="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center font-semibold">5</div><div><span class="font-medium text-sm">瑪利諾修院學校(小學部)</span><p class="text-[11px] text-gray-500">🇭🇰 香港</p></div></div><span class="font-bold">88.9</span>
+                    </div>
+                    
+                    <div class="ranking-item flex items-center justify-between bg-white/3 rounded-lg p-3">
+                        <div class="flex items-center gap-3"><div class="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center font-semibold">6</div><div><span class="font-medium text-sm">港大同學會小學</span><p class="text-[11px] text-gray-500">🇭🇰 香港</p></div></div><span class="font-bold">88.5</span>
+                    </div>
+                    
+                    <div class="ranking-item flex items-center justify-between bg-white/3 rounded-lg p-3">
+                        <div class="flex items-center gap-3"><div class="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center font-semibold">7</div><div><span class="font-medium text-sm">重庆市巴蜀小学校</span><p class="text-[11px] text-gray-500">🇨🇳 重慶</p></div></div><span class="font-bold">87.8</span>
+                    </div>
+                    
+                    <div class="ranking-item flex items-center justify-between bg-white/3 rounded-lg p-3">
+                        <div class="flex items-center gap-3"><div class="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center font-semibold">8</div><div><span class="font-medium text-sm">深圳前海哈罗港人子弟学校</span><p class="text-[11px] text-gray-500">🇨🇳 深圳</p></div></div><span class="font-bold">87.2</span>
+                    </div>
+                    
+                    <div class="ranking-item flex items-center justify-between bg-white/3 rounded-lg p-3">
+                        <div class="flex items-center gap-3"><div class="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center font-semibold">9</div><div><span class="font-medium text-sm">澳門培正中學</span><p class="text-[11px] text-gray-500">🇲🇴 澳門</p></div></div><span class="font-bold">86.9</span>
+                    </div>
+                    
+                    <div class="ranking-item flex items-center justify-between bg-white/3 rounded-lg p-3">
+                        <div class="flex items-center gap-3"><div class="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center font-semibold">10</div><div><span class="font-medium text-sm">民生書院小學</span><p class="text-[11px] text-gray-500">🇭🇰 香港</p></div></div><span class="font-bold">86.5</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- School Query -->
+        <div class="glass-card rounded-xl p-5 neon-border mb-5 relative">
+            <div class="section-title">
+                <div class="icon-box bg-pink-500/20"><i class="fas fa-search text-pink-400"></i></div>
+                <div>
+                    <h2 class="text-lg font-bold">學校年級數據查詢</h2>
+                    <p class="text-xs text-gray-400">查詢各校各年級詳細表現</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-4 gap-4 mb-5">
+                <div>
+                    <label class="text-xs text-gray-400 mb-2 block">選擇城市/地區</label>
+                    <select id="citySelect" class="school-select w-full" onchange="onCityChange()">
+                        <option value="hk_primary">香港 - 小學 (50所)</option>
+                        <option value="hk_secondary">香港 - 中學 (57所)</option>
+                        <option value="sz">深圳 (8所)</option>
+                        <option value="gz">廣州 (2所)</option>
+                        <option value="mo">澳門 (3所)</option>
+                        <option value="sh">上海 (21所)</option>
+                        <option value="cq">重慶 (5所)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 mb-2 block">選擇學校</label>
+                    <select id="schoolSelect" class="school-select w-full" onchange="onSchoolChange()">
+                        <option value="">請選擇學校...</option>
+                    </select>
+                </div>
+                <div id="gradeSection" class="hidden col-span-2">
+                    <label class="text-xs text-gray-400 mb-2 block">選擇年級</label>
+                    <div id="gradeButtons" class="flex flex-wrap gap-2"></div>
+                </div>
+            </div>
+
+            <div id="schoolStats" class="hidden">
+                <div class="grid grid-cols-5 gap-3 mb-5">
+                    <div class="metric-card text-center"><div class="text-2xl font-bold text-blue-400" id="statStudents">-</div><div class="text-[11px] text-gray-400 mt-1">學生人數</div></div>
+                    <div class="metric-card text-center"><div class="text-2xl font-bold text-emerald-400" id="statAvgScore">-</div><div class="text-[11px] text-gray-400 mt-1">平均分數</div></div>
+                    <div class="metric-card text-center"><div class="text-2xl font-bold text-purple-400" id="statPassRate">-</div><div class="text-[11px] text-gray-400 mt-1">及格率</div></div>
+                    <div class="metric-card text-center"><div class="text-2xl font-bold text-amber-400" id="statExcellent">-</div><div class="text-[11px] text-gray-400 mt-1">優秀率</div></div>
+                    <div class="metric-card text-center"><div class="text-2xl font-bold text-cyan-400" id="statRank">-</div><div class="text-[11px] text-gray-400 mt-1">區域排名</div></div>
+                </div>
+                <div class="grid grid-cols-2 gap-5">
+                    <div class="metric-card"><h3 class="text-xs font-semibold mb-3 text-gray-300 flex items-center gap-2"><i class="fas fa-chart-bar text-purple-400"></i>各年級平均分</h3><div style="height: 140px;"><canvas id="gradeChart"></canvas></div></div>
+                    <div class="metric-card"><h3 class="text-xs font-semibold mb-3 text-gray-300 flex items-center gap-2"><i class="fas fa-table text-cyan-400"></i>年級詳細數據</h3><div class="overflow-auto max-h-[140px] scrollbar-thin"><table class="data-table"><thead><tr><th>年級</th><th>人數</th><th>平均分</th><th>及格率</th></tr></thead><tbody id="gradeTableBody"></tbody></table></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Score Distribution & Info -->
+        <div class="grid grid-cols-12 gap-5">
+            <div class="col-span-5 glass-card rounded-xl p-5 neon-border relative">
+                <div class="section-title">
+                    <div class="icon-box bg-purple-500/20"><i class="fas fa-chart-pie text-purple-400"></i></div>
+                    <div>
+                        <h2 class="text-lg font-bold">全國成績分布</h2>
+                        <p class="text-xs text-gray-400">初賽成績等級統計</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-5">
+                    <div style="height: 180px; width: 180px;"><canvas id="distributionChart"></canvas></div>
+                    <div class="flex-1 space-y-2">
+                        <div class="flex items-center justify-between p-2 rounded-lg bg-purple-500/10 border-l-2 border-purple-500">
+                            <span class="text-xs">卓越 90-100</span>
+                            <span class="text-xs font-bold text-purple-400">8.2% (976人)</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 rounded-lg bg-blue-500/10 border-l-2 border-blue-500">
+                            <span class="text-xs">優秀 80-89</span>
+                            <span class="text-xs font-bold text-blue-400">22.5% (2,678人)</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 rounded-lg bg-emerald-500/10 border-l-2 border-emerald-500">
+                            <span class="text-xs">良好 70-79</span>
+                            <span class="text-xs font-bold text-emerald-400">35.8% (4,260人)</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 rounded-lg bg-amber-500/10 border-l-2 border-amber-500">
+                            <span class="text-xs">及格 60-69</span>
+                            <span class="text-xs font-bold text-amber-400">24.3% (2,892人)</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 rounded-lg bg-red-500/10 border-l-2 border-red-500">
+                            <span class="text-xs">待加強 &lt;60</span>
+                            <span class="text-xs font-bold text-red-400">9.2% (1,094人)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-span-4 glass-card rounded-xl p-5 neon-border relative">
+                <div class="section-title">
+                    <div class="icon-box bg-cyan-500/20"><i class="fas fa-award text-cyan-400"></i></div>
+                    <div>
+                        <h2 class="text-lg font-bold">獎項設置</h2>
+                        <p class="text-xs text-gray-400">決賽獎勵分配</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="text-center p-4 bg-gradient-to-b from-amber-500/15 to-transparent rounded-xl border border-amber-500/20">
+                        <div class="text-3xl mb-2">🥇</div>
+                        <div class="font-bold text-amber-400">金獎</div>
+                        <div class="text-xs text-gray-400 mt-1">TOP 5%</div>
+                        <div class="text-lg font-bold mt-2">64人</div>
+                    </div>
+                    <div class="text-center p-4 bg-gradient-to-b from-gray-400/15 to-transparent rounded-xl border border-gray-400/20">
+                        <div class="text-3xl mb-2">🥈</div>
+                        <div class="font-bold text-gray-300">銀獎</div>
+                        <div class="text-xs text-gray-400 mt-1">TOP 15%</div>
+                        <div class="text-lg font-bold mt-2">192人</div>
+                    </div>
+                    <div class="text-center p-4 bg-gradient-to-b from-orange-600/15 to-transparent rounded-xl border border-orange-600/20">
+                        <div class="text-3xl mb-2">🥉</div>
+                        <div class="font-bold text-orange-400">銅獎</div>
+                        <div class="text-xs text-gray-400 mt-1">TOP 30%</div>
+                        <div class="text-lg font-bold mt-2">383人</div>
+                    </div>
+                </div>
+                <div class="mt-4 p-3 bg-purple-500/10 rounded-lg border border-purple-500/20">
+                    <div class="flex items-center gap-2 text-sm">
+                        <i class="fas fa-certificate text-purple-400"></i>
+                        <span>所有參賽者均獲頒電子證書</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-span-3 glass-card rounded-xl p-5 neon-border relative">
+                <div class="section-title">
+                    <div class="icon-box bg-emerald-500/20"><i class="fas fa-robot text-emerald-400"></i></div>
+                    <div>
+                        <h2 class="text-lg font-bold">AI 評測系統</h2>
+                        <p class="text-xs text-gray-400">核心技術指標</p>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-3 bg-white/3 rounded-lg">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center">
+                                <i class="fas fa-bullseye text-emerald-400 text-sm"></i>
+                            </div>
+                            <span class="text-sm">AI 準確度</span>
+                        </div>
+                        <span class="text-xl font-bold text-emerald-400">92%</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-white/3 rounded-lg">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                                <i class="fas fa-database text-blue-400 text-sm"></i>
+                            </div>
+                            <span class="text-sm">題庫數量</span>
+                        </div>
+                        <span class="text-xl font-bold text-blue-400">5,000+</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-white/3 rounded-lg">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center">
+                                <i class="fas fa-clock text-purple-400 text-sm"></i>
+                            </div>
+                            <span class="text-sm">即時報告</span>
+                        </div>
+                        <span class="text-xl font-bold text-purple-400">&lt;3秒</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="glass-card mt-5 py-5 border-t border-white/5 relative">
+        <div class="max-w-[1920px] mx-auto px-6 flex items-center justify-between">
+            <div class="flex items-center gap-5">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center"><i class="fas fa-cube text-sm"></i></div>
+                    <div>
+                        <div class="text-sm font-semibold">Infinity Lab R&D Limited</div>
+                        <div class="text-[11px] text-gray-500">香港數碼港培育企業</div>
+                    </div>
+                </div>
+                <div class="h-6 w-px bg-white/10"></div>
+                <div class="text-xs text-gray-400"><i class="fas fa-envelope text-purple-400 mr-2"></i>contact@practifly.ai</div>
+            </div>
+            <div class="flex items-center gap-5 text-xs text-gray-400">
+                <span>資料更新：<span id="updateTime" class="text-white font-medium"></span></span>
+                <span>© 2025 Practifly AI. All Rights Reserved.</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // School Data
+        const schoolsData = {
+            hk_primary: ['中華基督教會協和小學(長沙灣)', '拔萃女小學', '浸信宣道會呂明才小學', '嘉諾撒聖家學校', '瑪利諾修院學校(小學部)', '民生書院小學', '港大同學會小學', '香港培正小學', '基督教宣道會宣基小學', '聖公會牧愛小學', '大坑東宣道小學', '仁愛堂劉皇發夫人小學', '九龍城浸信會禧年(恩平)小學', '中華基督教會基慧小學(馬灣)', '聖公會德田李兆強小學', '基督教神召會梁省德小學', '優才(楊殷有娣)書院', '聖公會主風小學', '基督教培恩小學', '中華基督教會灣仔堂基道小學(九龍城)', '嘉諾撒小學(新蒲崗)', '仁濟醫院陳耀星小學', '香港道教聯合會圓玄學院陳呂重德紀念學校', '博愛醫院歷屆總理聯誼會鄭任安夫人學校', '嗇色園主辦可信學校', '聖公會奉基小學', '曾梅千禧學校', '聖公會聖馬太小學', '仁濟醫院羅陳楚思小學', '滬江小學', '南元朗官立小學', '東華三院港九電器商聯會小學', '聖公會田灣始南小學', '天主教聖安德肋小學', '福建中學附屬學校', '仁德天主教小學', '荃灣商會學校', '迦密梁省德學校', '聖愛德華天主教小學', '聖公會基顯小學', '觀塘官立小學', '天主教柏德學校', '雲泉學校', '佛教慈敬學校', '嶺南大學香港同學會小學', '啟基學校', '聖母無玷聖心學校', '張振興伉儷書院', '聖母無玷聖心書院', '香港中文大學校友會聯會張煊昌學校'],
+            hk_secondary: ['聖伯多祿中學', '香港中文大學校友會聯會張煊昌中學', '可立中學(嗇色園主辦)', '浸信會呂明才中學', '嘉諾撒聖心書院', '聖羅撒書院', '基督教香港信義會元朗信義中學', '保良局羅氏基金中學', '迦密中學', '廠商會中學', '民生書院', '萬鈞匯知中學', '香海正覺蓮社佛教正覺中學', '滬江維多利亞學校', '衛理中學', '旅港開平商會學校', '嘉諾撒聖心英文中學', '仁濟醫院羅陳楚思中學', '呂郭碧鳳中學', '寧波公學'],
+            sz: ['深圳前海哈罗港人子弟学校', '深圳市南山中英文学校', '深圳市新福景双语学校', '深圳市罗湖区华美外国语学校', '香港中文大學（深圳）附屬道遠學校', '香港中文大學（深圳）附屬禮文學校', '香港中文大學（深圳）附屬知新學校', '深圳市汉开数理高中'],
+            gz: ['廣州暨大港澳子弟学校', '廣州市中黃港澳子弟學校'],
+            mo: ['澳門培正中學', '澳門大學附屬應用學校', '澳門嘉諾撒聖心英文中學'],
+            sh: ['上海市民办宏星小学', '上海市民办丽英小学', '上海市民办尚外外国语小学', '上海博世凯外国语学校', '上海市民办南模中学', '上海市民办新复兴初级中学', '上海青浦区世外学校', '上海市虹口区曲阳第四小学', '上海市虹口区广灵路小学', '上海市虹口区第四中心小学', '上海市虹口区新宏星小学', '上海虹口区复兴实验小学', '上海外国语大学附属外国语小学', '上海市进才实验小学', '虹口区中州路第一小学', '上海市华东师大一附中实验小学', '上海市红旗小学', '上海市虹口区外国语第二小学', '上海市虹口区第三中心小学', '上海浦东新区竹园小学', '上海市第二师范学校附属小学'],
+            cq: ['重庆市巴蜀小学校', '重庆市蓝湖郡巴蜀小学', '重庆市渝北区鲁能巴蜀小学校', '重庆市渝北巴蜀小学', '重庆两江新区巴蜀南湖郡小学']
+        };
+
+        // Chart Data with clear differences
+        const primaryAreaData = { hk: [78, 65, 82, 70, 85], gba: [85, 72, 88, 80, 82], sh: [90, 78, 92, 85, 88] };
+        const secondaryAreaData = { hk: [72, 80, 82], gba: [80, 85, 78], sh: [86, 90, 85] };
+        const primaryUnitData = { hk: [70, 82, 65, 75, 85, 62, 88], gba: [80, 88, 75, 82, 82, 72, 85], sh: [88, 92, 82, 88, 88, 80, 90] };
+        const secondaryUnitData = { hk: [68, 75, 65, 72, 80, 82], gba: [78, 82, 72, 80, 85, 80], sh: [85, 88, 80, 85, 90, 88] };
+
+        let chinaMap, areaRadarChart, unitBarChart, gradeChart, distributionChart;
+        let currentLevel = 'primary';
+        let currentSchool = null;
+        let selectedRegions = ['hk', 'gba', 'sh'];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            animateCounter('totalSchools', 190, '+');
+            animateCounter('totalParticipants', 11900, '+');
+            animateCounter('semifinalCount', 5689, '');
+            animateCounter('finalCount', 1278, '');
+            updateTime();
+            setInterval(updateTime, 1000);
+            initChinaMap();
+            initCharts();
+            generateCityList();
+            onCityChange();
+        });
+
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = now.toLocaleString('zh-HK');
+            document.getElementById('updateTime').textContent = now.toLocaleString('zh-HK', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        }
+
+        function animateCounter(id, target, suffix) {
+            const el = document.getElementById(id);
+            let current = 0;
+            const step = target / 50;
+            const timer = setInterval(() => {
+                current += step;
+                if (current >= target) { el.textContent = target.toLocaleString() + suffix; clearInterval(timer); }
+                else { el.textContent = Math.floor(current).toLocaleString(); }
+            }, 40);
+        }
+
+        function selectRegion(el, region) {
+            el.classList.toggle('selected');
+            if (el.classList.contains('selected')) {
+                if (!selectedRegions.includes(region)) selectedRegions.push(region);
+            } else {
+                selectedRegions = selectedRegions.filter(r => r !== region);
+            }
+            updateComparisonBars();
+        }
+
+        function updateComparisonBars() {
+            // This would update the comparison bars based on selected regions
+        }
+
+        function switchLevel(level) {
+            currentLevel = level;
+            document.getElementById('primaryTab').classList.toggle('active', level === 'primary');
+            document.getElementById('secondaryTab').classList.toggle('active', level === 'secondary');
+            document.getElementById('primaryAreaDesc').classList.toggle('hidden', level !== 'primary');
+            document.getElementById('secondaryAreaDesc').classList.toggle('hidden', level !== 'secondary');
+            updateCharts();
+        }
+
+        function updateCharts() {
+            const areaData = currentLevel === 'primary' ? primaryAreaData : secondaryAreaData;
+            const unitData = currentLevel === 'primary' ? primaryUnitData : secondaryUnitData;
+            const areaLabels = currentLevel === 'primary' ? ['數', '代數', '度量', '圖形空間', '數據'] : ['數與代數', '度量圖形空間', '數據處理'];
+            const unitLabels = currentLevel === 'primary' ? ['20以內數', '加減法', '乘法', '除法', '分數', '小數', '時間'] : ['有向數', '多項式', '方程', '不等式', '三角學', '概率'];
+            
+            areaRadarChart.data.labels = areaLabels;
+            areaRadarChart.data.datasets[0].data = areaData.hk;
+            areaRadarChart.data.datasets[1].data = areaData.gba;
+            areaRadarChart.data.datasets[2].data = areaData.sh;
+            areaRadarChart.update();
+            
+            unitBarChart.data.labels = unitLabels;
+            unitBarChart.data.datasets[0].data = unitData.hk;
+            unitBarChart.data.datasets[1].data = unitData.gba;
+            unitBarChart.data.datasets[2].data = unitData.sh;
+            unitBarChart.update();
+        }
+
+        function initChinaMap() {
+            chinaMap = echarts.init(document.getElementById('chinaMap'));
+            fetch('https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json').then(res => res.json()).then(geoJson => { echarts.registerMap('china', geoJson); renderMap(); }).catch(() => {});
+            window.addEventListener('resize', () => chinaMap && chinaMap.resize());
+        }
+
+        function renderMap() {
+            const option = {
+                backgroundColor: 'transparent',
+                tooltip: { trigger: 'item', backgroundColor: 'rgba(20,20,40,0.95)', borderColor: '#8B7CB6', textStyle: { color: '#fff', fontSize: 13 }, formatter: (p) => p.data ? `<strong>${p.data.cityName}</strong><br/>學校: ${p.data.schools} 所<br/>學生: ${p.data.students}` : '' },
+                geo: { map: 'china', roam: true, zoom: 1.2, center: [108, 34], itemStyle: { areaColor: 'rgba(139,124,182,0.08)', borderColor: 'rgba(139,124,182,0.3)' }, emphasis: { itemStyle: { areaColor: 'rgba(139,124,182,0.25)' } } },
+                series: [{ type: 'scatter', coordinateSystem: 'geo', symbol: 'circle', symbolSize: (v) => Math.sqrt(v[2]) * 2.5 + 12, label: { show: true, formatter: '{b}', position: 'right', fontSize: 11, color: '#E5E7EB' }, itemStyle: { color: (p) => p.data.color, shadowBlur: 8, shadowColor: 'rgba(0,0,0,0.3)' },
+                    data: [
+                        { value: [114.17, 22.32, 107], name: '香港', cityName: '香港', schools: 107, students: '7,000', color: '#EC4899' },
+                        { value: [113.55, 22.15, 3], name: '澳門', cityName: '澳門', schools: 3, students: '450', color: '#A855F7' },
+                        { value: [114.07, 22.65, 8], name: '深圳', cityName: '深圳', schools: 8, students: '850', color: '#F97316' },
+                        { value: [113.23, 23.35, 4], name: '廣佛', cityName: '廣州·佛山', schools: 4, students: '600', color: '#F97316' },
+                        { value: [121.48, 31.22, 21], name: '上海', cityName: '上海', schools: 21, students: '1,680', color: '#3B82F6' },
+                        { value: [106.55, 29.57, 5], name: '重慶', cityName: '重慶', schools: 5, students: '620', color: '#22C55E' },
+                        { value: [116.40, 39.90, 3], name: '北京', cityName: '北京', schools: 3, students: '350', color: '#6366F1' }
+                    ]
+                }]
+            };
+            chinaMap.setOption(option);
+        }
+
+        function switchView(view) {
+            document.getElementById('mapTabBtn').classList.toggle('active', view === 'map');
+            document.getElementById('listTabBtn').classList.toggle('active', view === 'list');
+            document.getElementById('mapView').classList.toggle('hidden', view !== 'map');
+            document.getElementById('listView').classList.toggle('hidden', view !== 'list');
+            if (view === 'map' && chinaMap) chinaMap.resize();
+        }
+
+        function generateCityList() {
+            const cities = [
+                { name: '香港小學', schools: 50, students: 3200, color: '#EC4899', key: 'hk_primary' },
+                { name: '香港中學', schools: 57, students: 3800, color: '#EC4899', key: 'hk_secondary' },
+                { name: '深圳', schools: 8, students: 850, color: '#F97316', key: 'sz' },
+                { name: '廣州', schools: 2, students: 280, color: '#F97316', key: 'gz' },
+                { name: '澳門', schools: 3, students: 450, color: '#A855F7', key: 'mo' },
+                { name: '上海', schools: 21, students: 1680, color: '#3B82F6', key: 'sh' },
+                { name: '重慶', schools: 5, students: 620, color: '#22C55E', key: 'cq' }
+            ];
+            const container = document.getElementById('cityListContainer');
+            container.innerHTML = '';
+            cities.forEach(city => {
+                const div = document.createElement('div');
+                div.className = 'p-4 bg-white/3 rounded-xl border border-white/5 hover:border-purple-500/30 cursor-pointer transition-all';
+                div.innerHTML = `<div class="flex items-center gap-2 mb-2"><span class="w-3 h-3 rounded" style="background:${city.color}"></span><span class="font-semibold text-sm">${city.name}</span></div><div class="text-xs text-gray-400">${city.schools} 所學校 · ${city.students.toLocaleString()} 學生</div>`;
+                div.onclick = () => { document.getElementById('citySelect').value = city.key; onCityChange(); };
+                container.appendChild(div);
+            });
+        }
+
+        function onCityChange() {
+            const key = document.getElementById('citySelect').value;
+            const select = document.getElementById('schoolSelect');
+            select.innerHTML = '<option value="">請選擇學校...</option>';
+            (schoolsData[key] || []).forEach((name, i) => {
+                const opt = document.createElement('option');
+                opt.value = `${key}_${i}`;
+                opt.textContent = name;
+                opt.dataset.name = name;
+                select.appendChild(opt);
+            });
+            document.getElementById('gradeSection').classList.add('hidden');
+            document.getElementById('schoolStats').classList.add('hidden');
+        }
+
+        function onSchoolChange() {
+            const sel = document.getElementById('schoolSelect');
+            if (!sel.value) { document.getElementById('gradeSection').classList.add('hidden'); document.getElementById('schoolStats').classList.add('hidden'); return; }
+            const name = sel.options[sel.selectedIndex].dataset.name;
+            const cityKey = document.getElementById('citySelect').value;
+            let grades = (cityKey === 'hk_primary' || name.includes('小學') || name.includes('小学')) ? ['P1','P2','P3','P4','P5','P6'] : ['S1','S2','S3','S4','S5','S6'];
+            currentSchool = { id: sel.value, name, grades };
+            document.getElementById('gradeSection').classList.remove('hidden');
+            const btns = document.getElementById('gradeButtons');
+            btns.innerHTML = '';
+            grades.forEach((g, i) => {
+                const btn = document.createElement('button');
+                btn.className = `grade-btn ${i === 0 ? 'active' : ''}`;
+                btn.textContent = g;
+                btn.onclick = () => { document.querySelectorAll('.grade-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); selectGrade(g); };
+                btns.appendChild(btn);
+            });
+            selectGrade(grades[0]);
+        }
+
+        function generateGradeData(id, grade) {
+            const seed = id.split('').reduce((a,c) => a + c.charCodeAt(0), 0) + grade.charCodeAt(1);
+            const rand = (min, max) => { const x = Math.sin(seed * (min + max + 1)) * 10000; return Math.floor((x - Math.floor(x)) * (max - min + 1)) + min; };
+            return { students: rand(28, 52), avgScore: Math.min(96, Math.max(58, 68 + rand(0, 22) + rand(-5, 8))), passRate: Math.min(100, Math.max(78, 82 + rand(0, 18))), excellentRate: Math.min(65, Math.max(18, 25 + rand(0, 32))), rank: rand(1, 40) };
+        }
+
+        function selectGrade(grade) {
+            if (!currentSchool) return;
+            document.getElementById('schoolStats').classList.remove('hidden');
+            const data = generateGradeData(currentSchool.id, grade);
+            document.getElementById('statStudents').textContent = data.students;
+            document.getElementById('statAvgScore').textContent = data.avgScore.toFixed(1);
+            document.getElementById('statPassRate').textContent = data.passRate.toFixed(1) + '%';
+            document.getElementById('statExcellent').textContent = data.excellentRate.toFixed(1) + '%';
+            document.getElementById('statRank').textContent = '#' + data.rank;
+            
+            const scores = currentSchool.grades.map(g => generateGradeData(currentSchool.id, g).avgScore);
+            gradeChart.data.labels = currentSchool.grades;
+            gradeChart.data.datasets[0].data = scores;
+            gradeChart.update();
+            
+            const tbody = document.getElementById('gradeTableBody');
+            tbody.innerHTML = '';
+            currentSchool.grades.forEach(g => {
+                const d = generateGradeData(currentSchool.id, g);
+                const tr = document.createElement('tr');
+                tr.className = g === grade ? 'bg-purple-500/15' : '';
+                tr.innerHTML = `<td class="${g === grade ? 'font-semibold text-purple-400' : ''}">${g}</td><td>${d.students}人</td><td class="${d.avgScore >= 80 ? 'text-emerald-400' : ''}">${d.avgScore.toFixed(1)}</td><td>${d.passRate.toFixed(1)}%</td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function initCharts() {
+            areaRadarChart = new Chart(document.getElementById('areaRadarChart'), {
+                type: 'radar',
+                data: {
+                    labels: ['數', '代數', '度量', '圖形空間', '數據'],
+                    datasets: [
+                        { data: primaryAreaData.hk, borderColor: '#EC4899', backgroundColor: 'rgba(236,72,153,0.15)', borderWidth: 2, pointRadius: 4, pointBackgroundColor: '#EC4899' },
+                        { data: primaryAreaData.gba, borderColor: '#F97316', backgroundColor: 'rgba(249,115,22,0.15)', borderWidth: 2, pointRadius: 4, pointBackgroundColor: '#F97316' },
+                        { data: primaryAreaData.sh, borderColor: '#3B82F6', backgroundColor: 'rgba(59,130,246,0.15)', borderWidth: 2, pointRadius: 4, pointBackgroundColor: '#3B82F6' }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { r: { min: 0, max: 100, ticks: { stepSize: 25, color: '#6B7280', backdropColor: 'transparent', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.08)' }, angleLines: { color: 'rgba(255,255,255,0.08)' }, pointLabels: { color: '#D1D5DB', font: { size: 10, weight: 500 } } } }, plugins: { legend: { display: false } } }
+            });
+
+            unitBarChart = new Chart(document.getElementById('unitBarChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['20以內數', '加減法', '乘法', '除法', '分數', '小數', '時間'],
+                    datasets: [
+                        { data: primaryUnitData.hk, backgroundColor: 'rgba(236,72,153,0.8)', borderRadius: 4 },
+                        { data: primaryUnitData.gba, backgroundColor: 'rgba(249,115,22,0.8)', borderRadius: 4 },
+                        { data: primaryUnitData.sh, backgroundColor: 'rgba(59,130,246,0.8)', borderRadius: 4 }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', scales: { x: { min: 0, max: 100, ticks: { color: '#9CA3AF', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.05)' } }, y: { ticks: { color: '#D1D5DB', font: { size: 9, weight: 500 } }, grid: { display: false } } }, plugins: { legend: { display: false } } }
+            });
+
+            gradeChart = new Chart(document.getElementById('gradeChart'), {
+                type: 'bar',
+                data: { labels: ['P1','P2','P3','P4','P5','P6'], datasets: [{ data: [78,82,79,85,83,88], backgroundColor: 'rgba(139,92,246,0.8)', borderRadius: 4 }] },
+                options: { responsive: true, maintainAspectRatio: false, scales: { x: { ticks: { color: '#9CA3AF', font: { size: 10 } }, grid: { display: false } }, y: { min: 50, max: 100, ticks: { color: '#9CA3AF', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } } }, plugins: { legend: { display: false } } }
+            });
+
+            distributionChart = new Chart(document.getElementById('distributionChart'), {
+                type: 'doughnut',
+                data: { labels: ['卓越', '優秀', '良好', '及格', '待加強'], datasets: [{ data: [8.2, 22.5, 35.8, 24.3, 9.2], backgroundColor: ['#8B5CF6', '#3B82F6', '#10B981', '#F59E0B', '#EF4444'], borderWidth: 0, hoverOffset: 6 }] },
+                options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: { display: false } } }
+            });
+        }
+    </script>
+</body>
+</html>
