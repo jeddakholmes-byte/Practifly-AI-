@@ -688,6 +688,23 @@
     </div>
 
     <main class="max-w-[1920px] mx-auto px-6 py-5 relative z-10">
+        </div>
+
+        <!-- 数据免责声明 -->
+        <div class="mb-5">
+            <div
+                class="bg-gradient-to-r from-amber-500/10 to-transparent border-l-4 border-amber-500 rounded-r-lg p-4 flex items-start gap-3">
+                <div class="w-10 h-10 bg-amber-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-shield-alt text-amber-400"></i>
+                </div>
+                <div class="flex-1">
+                    <h3 class="text-sm font-bold text-amber-300 mb-1">数据保护声明</h3>
+                    <p class="text-xs text-gray-300 leading-relaxed">
+                        由于各学校数据受本公司保护，本页面所有统计数据、学校排名、区域对比等均為模拟演示数据(DEMO)，仅用于展示系统功能界面，非真实参赛数据。实际数据受严格保密协议保护。
+                    </p>
+                </div>
+            </div>
+        </div>
         <!-- Stats Overview -->
         <div class="grid grid-cols-6 gap-4 mb-5">
             <div class="stat-card glass-card rounded-xl p-5 relative shimmer" style="--accent-color: #3B82F6;">
@@ -1524,8 +1541,8 @@
         let currentSchool = null;
 
         document.addEventListener('DOMContentLoaded', () => {
-            animateCounter('totalSchools', 251, '+');
-            animateCounter('totalParticipants', 11967, '+');
+            animateCounter('totalSchools', 251, '');
+            animateCounter('totalParticipants', 11967, '');
             animateCounter('semifinalCount', 5689, '');
             animateCounter('finalCount', 1278, '');
             updateTime();
